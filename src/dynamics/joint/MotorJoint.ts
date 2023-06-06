@@ -81,14 +81,14 @@ const DEFAULTS = {
 export default class MotorJoint extends Joint {
   static TYPE = 'motor-joint' as const;
 
-  /** @internal */ m_type: 'motor-joint';
-  /** @internal */ m_linearOffset: Vec2;
-  /** @internal */ m_angularOffset: number;
-  /** @internal */ m_linearImpulse: Vec2;
-  /** @internal */ m_angularImpulse: number;
-  /** @internal */ m_maxForce: number;
-  /** @internal */ m_maxTorque: number;
-  /** @internal */ m_correctionFactor: number;
+  m_type: 'motor-joint';
+  m_linearOffset: Vec2;
+  m_angularOffset: number;
+  m_linearImpulse: Vec2;
+  m_angularImpulse: number;
+  m_maxForce: number;
+  m_maxTorque: number;
+  m_correctionFactor: number;
 
   // Solver temp
   /** @internal */ m_rA: Vec2;

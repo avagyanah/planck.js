@@ -89,18 +89,18 @@ const DEFAULTS = {
 export default class WeldJoint extends Joint {
   static TYPE = 'weld-joint' as const
 
-  /** @internal */ m_type: 'weld-joint';
-  /** @internal */ m_localAnchorA: Vec2;
-  /** @internal */ m_localAnchorB: Vec2;
-  /** @internal */ m_referenceAngle: number;
+  m_type: 'weld-joint';
+  m_localAnchorA: Vec2;
+  m_localAnchorB: Vec2;
+  m_referenceAngle: number;
 
-  /** @internal */ m_frequencyHz: number;
-  /** @internal */ m_dampingRatio: number;
+  m_frequencyHz: number;
+  m_dampingRatio: number;
 
-  /** @internal */ m_impulse: Vec3;
+  m_impulse: Vec3;
 
-  /** @internal */ m_bias: number;
-  /** @internal */ m_gamma: number;
+  m_bias: number;
+  m_gamma: number;
 
   // Solver temp
   /** @internal */ m_rA: Vec2;

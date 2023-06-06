@@ -130,18 +130,18 @@ const DEFAULTS = {
 export default class RevoluteJoint extends Joint {
   static TYPE = 'revolute-joint' as const;
 
-  /** @internal */ m_type: 'revolute-joint';
-  /** @internal */ m_localAnchorA: Vec2;
-  /** @internal */ m_localAnchorB: Vec2;
-  /** @internal */ m_referenceAngle: number;
-  /** @internal */ m_impulse: Vec3;
-  /** @internal */ m_motorImpulse: number;
-  /** @internal */ m_lowerAngle: number;
-  /** @internal */ m_upperAngle: number;
-  /** @internal */ m_maxMotorTorque: number;
-  /** @internal */ m_motorSpeed: number;
-  /** @internal */ m_enableLimit: boolean;
-  /** @internal */ m_enableMotor: boolean;
+  m_type: 'revolute-joint';
+  m_localAnchorA: Vec2;
+  m_localAnchorB: Vec2;
+  m_referenceAngle: number;
+  m_impulse: Vec3;
+  m_motorImpulse: number;
+  m_lowerAngle: number;
+  m_upperAngle: number;
+  m_maxMotorTorque: number;
+  m_motorSpeed: number;
+  m_enableLimit: boolean;
+  m_enableMotor: boolean;
 
   // Solver temp
   /** @internal */ m_rA: Vec2;

@@ -77,16 +77,16 @@ const DEFAULTS = {
 export default class FrictionJoint extends Joint {
   static TYPE = 'friction-joint' as const;
 
-  /** @internal */ m_type: 'friction-joint';
+  m_type: 'friction-joint';
 
-  /** @internal */ m_localAnchorA: Vec2;
-  /** @internal */ m_localAnchorB: Vec2;
+  m_localAnchorA: Vec2;
+  m_localAnchorB: Vec2;
 
   // Solver shared
-  /** @internal */ m_linearImpulse: Vec2;
-  /** @internal */ m_angularImpulse: number;
-  /** @internal */ m_maxForce: number;
-  /** @internal */ m_maxTorque: number;
+  m_linearImpulse: Vec2;
+  m_angularImpulse: number;
+  m_maxForce: number;
+  m_maxTorque: number;
 
   // Solver temp
   /** @internal */ m_rA: Vec2;

@@ -120,37 +120,23 @@ export class VelocityConstraintPoint {
  * object may exist that has no contact points.
  */
 export default class Contact {
-  /** @internal */
   m_nodeA: ContactEdge;
-  /** @internal */
   m_nodeB: ContactEdge;
-  /** @internal */
   m_fixtureA: Fixture;
-  /** @internal */
   m_fixtureB: Fixture;
-  /** @internal */
   m_indexA: number;
-  /** @internal */
   m_indexB: number;
   /** @internal */
   m_evaluateFcn: EvaluateFunction;
-  /** @internal */
   m_manifold: Manifold = new Manifold();
-  /** @internal */
   m_prev: Contact | null = null;
-  /** @internal */
   m_next: Contact | null = null;
-  /** @internal */
   m_toi: number = 1.0;
-  /** @internal */
   m_toiCount: number = 0;
   /** @internal This contact has a valid TOI in m_toi */
   m_toiFlag: boolean = false;
-  /** @internal */
   m_friction: number;
-  /** @internal */
   m_restitution: number;
-  /** @internal */
   m_tangentSpeed: number = 0.0;
   /** @internal This contact can be disabled (by user) */
   m_enabledFlag: boolean = true;

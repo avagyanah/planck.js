@@ -471,6 +471,21 @@ declare class AABB {
     static diff(a: AABB, b: AABB): number;
     rayCast(output: RayCastOutput, input: RayCastInput): boolean;
 }
+declare class Velocity {
+    /** linear */
+    v: Vec2;
+    /** angular */
+    w: number;
+    constructor();
+}
+declare class Position {
+    /** location */
+    c: Vec2;
+    /** angle */
+    a: number;
+    constructor();
+    getTransform(xf: Transform, p: Vec2): Transform;
+}
 /*
 * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
 *
@@ -790,6 +805,19 @@ declare class FixtureProxy {
  * To create a new Fixture use {@link Body.createFixture}.
  */
 declare class Fixture {
+    m_body: Body;
+    m_friction: number;
+    m_restitution: number;
+    m_density: number;
+    m_isSensor: boolean;
+    m_filterGroupIndex: number;
+    m_filterCategoryBits: number;
+    m_filterMaskBits: number;
+    m_shape: Shape;
+    m_next: Fixture | null;
+    m_proxies: FixtureProxy[];
+    m_proxyCount: number;
+    m_userData: any;
     constructor(body: Body, def: FixtureDef);
     constructor(body: Body, shape: Shape, def?: FixtureOpt);
     constructor(body: Body, shape: Shape, density?: number);
@@ -1106,12 +1134,27 @@ declare class ContactEdge {
     constructor(contact: Contact);
 }
 type EvaluateFunction = (manifold: Manifold, xfA: Transform, fixtureA: Fixture, indexA: number, xfB: Transform, fixtureB: Fixture, indexB: number) => void;
+type ContactCallback = (manifold: Manifold, xfA: Transform, fixtureA: Fixture, indexA: number, xfB: Transform, fixtureB: Fixture, indexB: number) => void /* & { destroyFcn?: (contact: Contact) => void }*/;
 /**
  * The class manages contact between two shapes. A contact exists for each
  * overlapping AABB in the broad-phase (except if filtered). Therefore a contact
  * object may exist that has no contact points.
  */
 declare class Contact {
+    m_nodeA: ContactEdge;
+    m_nodeB: ContactEdge;
+    m_fixtureA: Fixture;
+    m_fixtureB: Fixture;
+    m_indexA: number;
+    m_indexB: number;
+    m_manifold: Manifold;
+    m_prev: Contact | null;
+    m_next: Contact | null;
+    m_toi: number;
+    m_toiCount: number;
+    m_friction: number;
+    m_restitution: number;
+    m_tangentSpeed: number;
     constructor(fA: Fixture, indexA: number, fB: Fixture, indexB: number, evaluateFcn: EvaluateFunction);
     initConstraint(step: TimeStep): void;
     /**
@@ -1264,6 +1307,27 @@ type WorldRayCastCallback = (fixture: Fixture, point: Vec2, normal: Vec2, fracti
 type WorldAABBQueryCallback = (fixture: Fixture) => boolean;
 declare function World(def?: WorldDef | Vec2 | null): World;
 declare class World {
+    m_solver: Solver;
+    m_broadPhase: BroadPhase;
+    m_contactList: Contact | null;
+    m_contactCount: number;
+    m_bodyList: Body | null;
+    m_bodyCount: number;
+    m_jointList: Joint | null;
+    m_jointCount: number;
+    m_stepComplete: boolean;
+    m_allowSleep: boolean;
+    m_gravity: Vec2;
+    m_clearForces: boolean;
+    m_newFixture: boolean;
+    m_locked: boolean;
+    m_warmStarting: boolean;
+    m_continuousPhysics: boolean;
+    m_subStepping: boolean;
+    m_blockSolve: boolean;
+    m_velocityIterations: number;
+    m_positionIterations: number;
+    m_t: number;
     /**
      * @param def World definition or gravity vector.
      */
@@ -1530,6 +1594,28 @@ declare class ContactImpulse {
     get tangentImpulses(): number[];
 }
 /**
+ * Finds and solves islands. An island is a connected subset of the world.
+ */
+declare class Solver {
+    m_world: World;
+    m_stack: Body[];
+    m_bodies: Body[];
+    m_contacts: Contact[];
+    m_joints: Joint[];
+    constructor(world: World);
+    clear(): void;
+    addBody(body: Body): void;
+    addContact(contact: Contact): void;
+    addJoint(joint: Joint): void;
+    solveWorld(step: TimeStep): void;
+    solveIsland(step: TimeStep): void;
+    /**
+     * Find TOI contacts and solve them.
+     */
+    solveWorldTOI(step: TimeStep): void;
+    solveIslandTOI(subStep: TimeStep, toiA: Body, toiB: Body): void;
+}
+/**
  * A joint edge is used to connect bodies and joints together in a joint graph
  * where each body is a node and each joint is an edge. A joint edge belongs to
  * a doubly linked list maintained in each attached body. Each joint has two
@@ -1585,6 +1671,15 @@ interface JointDef extends JointOpt {
  * various fashions. Some joints also feature limits and motors.
  */
 declare abstract class Joint {
+    m_type: string;
+    m_bodyA: Body;
+    m_bodyB: Body;
+    m_collideConnected: boolean;
+    m_prev: Joint | null;
+    m_next: Joint | null;
+    m_edgeA: JointEdge;
+    m_edgeB: JointEdge;
+    m_userData: any;
     constructor(def: JointDef);
     constructor(def: JointOpt, bodyA: Body, bodyB: Body);
     /**
@@ -1743,6 +1838,30 @@ declare class Body {
      * If you try to set the mass of a dynamic body to zero, it will automatically acquire a mass of one kilogram and it won't rotate.
      */
     static readonly DYNAMIC: BodyType;
+    m_world: World;
+    m_userData: any;
+    m_type: BodyType;
+    m_mass: number;
+    m_invMass: number;
+    /** Rotational inertia about the center of mass. */
+    m_I: number;
+    // position and velocity correction
+    c_velocity: Velocity;
+    c_position: Position;
+    m_force: Vec2;
+    m_torque: number;
+    m_linearVelocity: Vec2;
+    m_angularVelocity: number;
+    m_linearDamping: number;
+    m_angularDamping: number;
+    m_gravityScale: number;
+    m_sleepTime: number;
+    m_jointList: JointEdge | null;
+    m_contactList: ContactEdge | null;
+    m_fixtureList: Fixture | null;
+    m_prev: Body | null;
+    m_next: Body | null;
+    m_destroyed: boolean;
     isWorldLocked(): boolean;
     getWorld(): World;
     getNext(): Body | null;
@@ -2499,6 +2618,15 @@ declare const DistanceJoint: {
  * @param anchorB Anchor B in global coordination.
  */
 declare interface DistanceJoint extends Joint {
+    // Solver shared
+    m_localAnchorA: Vec2;
+    m_localAnchorB: Vec2;
+    m_length: number;
+    m_frequencyHz: number;
+    m_dampingRatio: number;
+    m_impulse: number;
+    m_gamma: number;
+    m_bias: number;
     /**
      * The local anchor point relative to bodyA's origin.
      */
@@ -2583,6 +2711,14 @@ declare const FrictionJoint: {
  * @param anchor Anchor in global coordination.
  */
 declare interface FrictionJoint extends Joint {
+    m_type: "friction-joint";
+    m_localAnchorA: Vec2;
+    m_localAnchorB: Vec2;
+    // Solver shared
+    m_linearImpulse: Vec2;
+    m_angularImpulse: number;
+    m_maxForce: number;
+    m_maxTorque: number;
     /**
      * The local anchor point relative to bodyA's origin.
      */
@@ -2713,6 +2849,18 @@ declare const RevoluteJoint: {
  * so that infinite forces are not generated.
  */
 declare interface RevoluteJoint extends Joint {
+    m_type: "revolute-joint";
+    m_localAnchorA: Vec2;
+    m_localAnchorB: Vec2;
+    m_referenceAngle: number;
+    m_impulse: Vec3;
+    m_motorImpulse: number;
+    m_lowerAngle: number;
+    m_upperAngle: number;
+    m_maxMotorTorque: number;
+    m_motorSpeed: number;
+    m_enableLimit: boolean;
+    m_enableMotor: boolean;
     /**
      * The local anchor point relative to bodyA's origin.
      */
@@ -2877,6 +3025,24 @@ declare const PrismaticJoint: {
  * motion or to model joint friction.
  */
 declare interface PrismaticJoint extends Joint {
+    m_type: "prismatic-joint";
+    m_localAnchorA: Vec2;
+    m_localAnchorB: Vec2;
+    m_localXAxisA: Vec2;
+    m_localYAxisA: Vec2;
+    m_referenceAngle: number;
+    m_impulse: Vec3;
+    m_motorMass: number;
+    m_motorImpulse: number;
+    m_lowerTranslation: number;
+    m_upperTranslation: number;
+    m_maxMotorForce: number;
+    m_motorSpeed: number;
+    m_enableLimit: boolean;
+    m_enableMotor: boolean;
+    m_limitState: number; // TODO enum
+    m_axis: Vec2;
+    m_perp: Vec2;
     /**
      * The local anchor point relative to bodyA's origin.
      */
@@ -3012,6 +3178,24 @@ declare const GearJoint: {
  * combination will work).
  */
 declare interface GearJoint extends Joint {
+    m_type: "gear-joint";
+    m_joint1: RevoluteJoint | PrismaticJoint;
+    m_joint2: RevoluteJoint | PrismaticJoint;
+    m_type1: "revolute-joint" | "prismatic-joint";
+    m_type2: "revolute-joint" | "prismatic-joint";
+    m_bodyC: Body;
+    m_localAnchorC: Vec2;
+    m_localAnchorA: Vec2;
+    m_referenceAngleA: number;
+    m_localAxisC: Vec2;
+    m_bodyD: Body;
+    m_localAnchorD: Vec2;
+    m_localAnchorB: Vec2;
+    m_referenceAngleB: number;
+    m_localAxisD: Vec2;
+    m_ratio: number;
+    m_constant: number;
+    m_impulse: number;
     /**
      * Get the first joint.
      */
@@ -3094,6 +3278,14 @@ declare const MotorJoint: {
  * the ground.
  */
 declare interface MotorJoint extends Joint {
+    m_type: "motor-joint";
+    m_linearOffset: Vec2;
+    m_angularOffset: number;
+    m_linearImpulse: Vec2;
+    m_angularImpulse: number;
+    m_maxForce: number;
+    m_maxTorque: number;
+    m_correctionFactor: number;
     /**
      * Set the maximum friction force in N.
      */
@@ -3200,6 +3392,15 @@ declare const MouseJoint: {
  * at the testbed.
  */
 declare interface MouseJoint extends Joint {
+    m_type: "mouse-joint";
+    m_targetA: Vec2;
+    m_localAnchorB: Vec2;
+    m_maxForce: number;
+    m_impulse: Vec2;
+    m_frequencyHz: number;
+    m_dampingRatio: number;
+    m_beta: number;
+    m_gamma: number;
     /**
      * Use this to update the target point.
      */
@@ -3316,6 +3517,17 @@ declare const PulleyJoint: {
  * length.
  */
 declare interface PulleyJoint extends Joint {
+    // static MIN_PULLEY_LENGTH: number = 2.0; // TODO where this is used?
+    m_type: "pulley-joint";
+    m_groundAnchorA: Vec2;
+    m_groundAnchorB: Vec2;
+    m_localAnchorA: Vec2;
+    m_localAnchorB: Vec2;
+    m_lengthA: number;
+    m_lengthB: number;
+    m_ratio: number;
+    m_constant: number;
+    m_impulse: number;
     _serialize(): object;
     /**
      * Get the first ground anchor.
@@ -3420,6 +3632,14 @@ declare const RopeJoint: {
  * want to dynamically control length.
  */
 declare interface RopeJoint extends Joint {
+    m_type: "rope-joint";
+    m_localAnchorA: Vec2;
+    m_localAnchorB: Vec2;
+    m_maxLength: number;
+    m_mass: number;
+    m_impulse: number;
+    m_length: number;
+    m_state: number; // TODO enum
     /**
      * The local anchor point relative to bodyA's origin.
      */
@@ -3514,6 +3734,15 @@ declare const WeldJoint: {
  * somewhat because the island constraint solver is approximate.
  */
 declare interface WeldJoint extends Joint {
+    m_type: "weld-joint";
+    m_localAnchorA: Vec2;
+    m_localAnchorB: Vec2;
+    m_referenceAngle: number;
+    m_frequencyHz: number;
+    m_dampingRatio: number;
+    m_impulse: Vec3;
+    m_bias: number;
+    m_gamma: number;
     /**
      * The local anchor point relative to bodyA's origin.
      */
@@ -3631,6 +3860,24 @@ declare const WheelJoint: {
  * This joint is designed for vehicle suspensions.
  */
 declare interface WheelJoint extends Joint {
+    m_type: "wheel-joint";
+    m_localAnchorA: Vec2;
+    m_localAnchorB: Vec2;
+    m_localXAxisA: Vec2;
+    m_localYAxisA: Vec2;
+    m_mass: number;
+    m_impulse: number;
+    m_motorMass: number;
+    m_motorImpulse: number;
+    m_springMass: number;
+    m_springImpulse: number;
+    m_maxMotorTorque: number;
+    m_motorSpeed: number;
+    m_enableMotor: boolean;
+    m_frequencyHz: number;
+    m_dampingRatio: number;
+    m_bias: number;
+    m_gamma: number;
     /**
      * The local anchor point relative to bodyA's origin.
      */
@@ -4021,4 +4268,4 @@ declare function testbed(callback: (testbed: Testbed) => World): any;
 type _ContactImpulse$0 = InstanceType<typeof ContactImpulse>;
 /** @deprecated Merged with main namespace */
 declare const internal$0: {};
-export { ActiveKeys, Testbed, testbed, Serializer, math as Math, Vec2, Vec3, Mat22, Mat33, Transform, Rot, AABB, Shape, Fixture, Body, Contact, Joint, World, CircleShape as Circle, EdgeShape as Edge, PolygonShape as Polygon, ChainShape as Chain, BoxShape as Box, CollideCircles, CollideEdgeCircle, CollidePolygons, CollidePolygonCircle, CollideEdgePolygon, DistanceJoint, FrictionJoint, GearJoint, MotorJoint, MouseJoint, PrismaticJoint, PulleyJoint, RevoluteJoint, RopeJoint, WeldJoint, WheelJoint, Settings, Sweep, Manifold, Distance, TimeOfImpact, DynamicTree, _ContactImpulse$0 as ContactImpulse, internal$0 as internal };
+export { ActiveKeys, Testbed, testbed, Serializer, math as Math, Vec2, Vec3, Mat22, Mat33, Transform, Rot, AABB, RayCastCallback, RayCastInput, RayCastOutput, Shape, ShapeType, Fixture, FixtureDef, FixtureOpt, FixtureProxy, Body, BodyDef, BodyType, MassData, Contact, ContactCallback, ContactEdge, Joint, JointDef, JointEdge, JointOpt, World, CircleShape as Circle, EdgeShape as Edge, PolygonShape as Polygon, ChainShape as Chain, BoxShape as Box, CollideCircles, CollideEdgeCircle, CollidePolygons, CollidePolygonCircle, CollideEdgePolygon, DistanceJoint, DistanceJointDef, DistanceJointOpt, FrictionJoint, FrictionJointDef, FrictionJointOpt, GearJoint, GearJointDef, GearJointOpt, MotorJoint, MotorJointDef, MotorJointOpt, MouseJoint, MouseJointDef, MouseJointOpt, PrismaticJoint, PrismaticJointDef, PrismaticJointOpt, PulleyJoint, PulleyJointDef, PulleyJointOpt, RevoluteJoint, RevoluteJointDef, RevoluteJointOpt, RopeJoint, RopeJointDef, RopeJointOpt, WeldJoint, WeldJointDef, WeldJointOpt, WheelJoint, WheelJointDef, WheelJointOpt, Settings, Sweep, Manifold, Distance, DistanceInput, DistanceOutput, TimeOfImpact, TOIInput, TOIOutput, DynamicTree, DynamicTreeQueryCallback, _ContactImpulse$0 as ContactImpulse, internal$0 as internal };

@@ -1,3 +1,4 @@
+import { default as Stage } from "stage-js/platform/web";
 import {
   AABB,
   Body,
@@ -5,9 +6,8 @@ import {
   Joint,
   MouseJoint,
   Vec2,
-  World
-} from '../src/index';
-import { default as Stage } from 'stage-js/platform/web';
+  World,
+} from "../src/index";
 
 export interface ActiveKeys {
   0?: boolean;
@@ -93,10 +93,14 @@ export interface Testbed {
   status(value: object | string): void;
   info(text: string): void;
 
-  drawPoint(p: {x: number, y: number}, r: any, color: string): void;
-  drawCircle(p: {x: number, y: number}, r: number, color: string): void;
-  drawSegment(a: {x: number, y: number}, b: {x: number, y: number}, color: string): void;
-  drawPolygon(points: Array<{x: number, y: number}>, color: string): void;
+  drawPoint(p: { x: number; y: number }, r: any, color: string): void;
+  drawCircle(p: { x: number; y: number }, r: number, color: string): void;
+  drawSegment(
+    a: { x: number; y: number },
+    b: { x: number; y: number },
+    color: string
+  ): void;
+  drawPolygon(points: Array<{ x: number; y: number }>, color: string): void;
   drawAABB(aabb: AABB, color: string): void;
   color(r: number, g: number, b: number): string;
 
@@ -112,14 +116,13 @@ export interface Testbed {
 export function testbed(opts: object, callback: (testbed: Testbed) => World);
 export function testbed(callback: (testbed: Testbed) => World);
 export function testbed(opts, callback?) {
-  if (typeof opts === 'function') {
+  if (typeof opts === "function") {
     callback = opts;
     opts = null;
   }
 
-  Stage(function(stage, canvas) {
-
-    stage.on(Stage.Mouse.START, function() {
+  Stage(function (stage, canvas) {
+    stage.on(Stage.Mouse.START, function () {
       window.focus();
       // @ts-ignore
       document.activeElement && document.activeElement.blur();
@@ -133,28 +136,28 @@ export function testbed(opts, callback?) {
     testbed.canvas = canvas;
 
     let paused = false;
-    stage.on('resume', function() {
+    stage.on("resume", function () {
       paused = false;
       testbed._resume && testbed._resume();
     });
-    stage.on('pause', function() {
+    stage.on("pause", function () {
       paused = true;
       testbed._pause && testbed._pause();
     });
-    testbed.isPaused = function() {
+    testbed.isPaused = function () {
       return paused;
     };
-    testbed.togglePause = function() {
+    testbed.togglePause = function () {
       paused ? testbed.resume() : testbed.pause();
     };
-    testbed.pause = function() {
+    testbed.pause = function () {
       stage.pause();
     };
-    testbed.resume = function() {
+    testbed.resume = function () {
       stage.resume();
       testbed.focus();
     };
-    testbed.focus = function() {
+    testbed.focus = function () {
       // @ts-ignore
       document.activeElement && document.activeElement.blur();
       canvas.focus();
@@ -169,23 +172,23 @@ export function testbed(opts, callback?) {
     testbed.hz = 60;
     testbed.speed = 1;
     testbed.activeKeys = {};
-    testbed.background = '#222222';
+    testbed.background = "#222222";
 
-    testbed.findOne = function() {
+    testbed.findOne = function () {
       // todo: implement
       return null;
     };
 
-    testbed.findAll = function() {
+    testbed.findAll = function () {
       // todo: implement
       return [];
     };
 
-    let statusText = '';
+    let statusText = "";
     const statusMap = {};
 
     function statusSet(name, value) {
-      if (typeof value !== 'function' && typeof value !== 'object') {
+      if (typeof value !== "function" && typeof value !== "object") {
         statusMap[name] = value;
       }
     }
@@ -197,81 +200,82 @@ export function testbed(opts, callback?) {
       }
     }
 
-    testbed.status = function(a, b?) {
-      if (typeof b !== 'undefined') {
+    testbed.status = function (a, b?) {
+      if (typeof b !== "undefined") {
         statusSet(a, b);
-      } else if (a && typeof a === 'object') {
+      } else if (a && typeof a === "object") {
         statusMerge(a);
-      } else if (typeof a === 'string') {
+      } else if (typeof a === "string") {
         statusText = a;
       }
 
       testbed._status && testbed._status(statusText, statusMap);
     };
 
-    testbed.info = function(text) {
+    testbed.info = function (text) {
       testbed._info && testbed._info(text);
     };
 
     let lastDrawHash = "";
     let drawHash = "";
 
-    (function() {
+    (function () {
       const drawingTexture = new Stage.Texture();
       stage.append(Stage.image(drawingTexture));
 
       const buffer = [];
-      stage.tick(function() {
+      stage.tick(function () {
         buffer.length = 0;
       }, true);
 
-      drawingTexture.draw = function(ctx) {
+      drawingTexture.draw = function (ctx) {
         ctx.save();
         ctx.transform(1, 0, 0, testbed.scaleY, -testbed.x, -testbed.y);
-        ctx.lineWidth = 2  / testbed.ratio;
-        ctx.lineCap = 'round';
+        ctx.lineWidth = 2 / testbed.ratio;
+        ctx.lineCap = "round";
         for (let drawing = buffer.shift(); drawing; drawing = buffer.shift()) {
           drawing(ctx, testbed.ratio);
         }
         ctx.restore();
       };
 
-      testbed.drawPoint = function(p, r, color) {
-        buffer.push(function(ctx, ratio) {
+      testbed.drawPoint = function (p, r, color) {
+        buffer.push(function (ctx, ratio) {
           ctx.beginPath();
-          ctx.arc(p.x, p.y, 5  / ratio, 0, 2 * Math.PI);
+          ctx.arc(p.x, p.y, 5 / ratio, 0, 2 * Math.PI);
           ctx.strokeStyle = color;
           ctx.stroke();
         });
-        drawHash += "point" + p.x + ',' + p.y + ',' + r + ',' + color;
+        drawHash += "point" + p.x + "," + p.y + "," + r + "," + color;
       };
 
-      testbed.drawCircle = function(p, r, color) {
-        buffer.push(function(ctx) {
+      testbed.drawCircle = function (p, r, color) {
+        buffer.push(function (ctx) {
           ctx.beginPath();
           ctx.arc(p.x, p.y, r, 0, 2 * Math.PI);
           ctx.strokeStyle = color;
           ctx.stroke();
         });
-        drawHash += "circle" + p.x + ',' + p.y + ',' + r + ',' + color;
+        drawHash += "circle" + p.x + "," + p.y + "," + r + "," + color;
       };
 
-      testbed.drawSegment = function(a, b, color) {
-        buffer.push(function(ctx) {
+      testbed.drawSegment = function (a, b, color) {
+        buffer.push(function (ctx) {
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
           ctx.strokeStyle = color;
           ctx.stroke();
         });
-        drawHash += "segment" + a.x + ',' + a.y + ',' + b.x + ',' + b.y + ',' + color;
+        drawHash +=
+          "segment" + a.x + "," + a.y + "," + b.x + "," + b.y + "," + color;
       };
 
-      testbed.drawPolygon = function(points, color) {
+      testbed.drawPolygon = function (points, color) {
         if (!points || !points.length) {
           return;
         }
-        buffer.push(function(ctx) {
+        buffer.push(function (ctx) {
           ctx.beginPath();
           ctx.moveTo(points[0].x, points[0].y);
           for (let i = 1; i < points.length; i++) {
@@ -283,13 +287,13 @@ export function testbed(opts, callback?) {
         });
         drawHash += "segment";
         for (let i = 1; i < points.length; i++) {
-          drawHash += points[i].x + ',' + points[i].y + ',';
+          drawHash += points[i].x + "," + points[i].y + ",";
         }
         drawHash += color;
       };
 
-      testbed.drawAABB = function(aabb, color) {
-        buffer.push(function(ctx) {
+      testbed.drawAABB = function (aabb, color) {
+        buffer.push(function (ctx) {
           ctx.beginPath();
           ctx.moveTo(aabb.lowerBound.x, aabb.lowerBound.y);
           ctx.lineTo(aabb.upperBound.x, aabb.lowerBound.y);
@@ -300,18 +304,17 @@ export function testbed(opts, callback?) {
           ctx.stroke();
         });
         drawHash += "aabb";
-        drawHash += aabb.lowerBound.x + ',' + aabb.lowerBound.y + ',';
-        drawHash += aabb.upperBound.x + ',' + aabb.upperBound.y + ',';
+        drawHash += aabb.lowerBound.x + "," + aabb.lowerBound.y + ",";
+        drawHash += aabb.upperBound.x + "," + aabb.upperBound.y + ",";
         drawHash += color;
       };
 
-      testbed.color = function(r, g, b) {
-        r = r * 256 | 0;
-        g = g * 256 | 0;
-        b = b * 256 | 0;
-        return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+      testbed.color = function (r, g, b) {
+        r = (r * 256) | 0;
+        g = (g * 256) | 0;
+        b = (b * 256) | 0;
+        return "rgb(" + r + ", " + g + ", " + b + ")";
       };
-
     })();
 
     const world = callback(testbed);
@@ -320,7 +323,7 @@ export function testbed(opts, callback?) {
 
     let lastX = 0;
     let lastY = 0;
-    stage.tick(function(dt, t) {
+    stage.tick(function (dt, t) {
       // update camera position
       if (lastX !== testbed.x || lastY !== testbed.y) {
         viewer.offset(-testbed.x, -testbed.y);
@@ -329,14 +332,18 @@ export function testbed(opts, callback?) {
       }
     });
 
-    viewer.tick(function(dt, t) {
+    viewer.tick(function (dt, t) {
       // call testbed step, if provided
-      if (typeof testbed.step === 'function') {
+      if (typeof testbed.step === "function") {
         testbed.step(dt, t);
       }
 
       if (targetBody) {
-        testbed.drawSegment(targetBody.getPosition(), mouseMove, 'rgba(255,255,255,0.2)');
+        testbed.drawSegment(
+          targetBody.getPosition(),
+          mouseMove,
+          "rgba(255,255,255,0.2)"
+        );
       }
 
       if (lastDrawHash !== drawHash) {
@@ -351,14 +358,14 @@ export function testbed(opts, callback?) {
     // stage.empty();
     stage.background(testbed.background);
     stage.viewbox(testbed.width, testbed.height);
-    stage.pin('alignX', -0.5);
-    stage.pin('alignY', -0.5);
+    stage.pin("alignX", -0.5);
+    stage.pin("alignY", -0.5);
     stage.prepend(viewer);
 
     function findBody(point) {
       let body;
       const aabb = new AABB(point, point);
-      world.queryAABB(aabb, function(fixture) {
+      world.queryAABB(aabb, function (fixture) {
         if (body) {
           return;
         }
@@ -375,74 +382,85 @@ export function testbed(opts, callback?) {
     let mouseJoint;
 
     let targetBody;
-    const mouseMove = {x: 0, y: 0};
+    const mouseMove = { x: 0, y: 0 };
 
-    viewer.attr('spy', true).on(Stage.Mouse.START, function(point) {
-      point = { x: point.x, y: testbed.scaleY * point.y };
-      if (targetBody) {
-        return;
-      }
+    viewer
+      .attr("spy", true)
+      .on(Stage.Mouse.START, function (point) {
+        point = { x: point.x, y: testbed.scaleY * point.y };
+        if (targetBody) {
+          return;
+        }
 
-      const body = findBody(point);
-      if (!body) {
-        return;
-      }
+        const body = findBody(point);
+        if (!body) {
+          return;
+        }
 
-      if (testbed.mouseForce) {
-        targetBody = body;
+        if (testbed.mouseForce) {
+          targetBody = body;
+        } else {
+          mouseJoint = new MouseJoint(
+            { maxForce: 1000 },
+            mouseGround,
+            body,
+            Vec2.clone(point)
+          );
+          world.createJoint(mouseJoint);
+        }
+      })
+      .on(Stage.Mouse.MOVE, function (point) {
+        point = { x: point.x, y: testbed.scaleY * point.y };
+        if (mouseJoint) {
+          mouseJoint.setTarget(point);
+        }
 
-      } else {
-        mouseJoint = new MouseJoint({maxForce: 1000}, mouseGround, body, Vec2.clone(point));
-        world.createJoint(mouseJoint);
-      }
+        mouseMove.x = point.x;
+        mouseMove.y = point.y;
+      })
+      .on(Stage.Mouse.END, function (point) {
+        point = { x: point.x, y: testbed.scaleY * point.y };
+        if (mouseJoint) {
+          world.destroyJoint(mouseJoint);
+          mouseJoint = null;
+        }
+        if (targetBody) {
+          const force = Vec2.sub(point, targetBody.getPosition());
+          targetBody.applyForceToCenter(force.mul(testbed.mouseForce), true);
+          targetBody = null;
+        }
+      })
+      .on(Stage.Mouse.CANCEL, function (point) {
+        point = { x: point.x, y: testbed.scaleY * point.y };
+        if (mouseJoint) {
+          world.destroyJoint(mouseJoint);
+          mouseJoint = null;
+        }
+        if (targetBody) {
+          targetBody = null;
+        }
+      });
 
-    }).on(Stage.Mouse.MOVE, function(point) {
-      point = { x: point.x, y: testbed.scaleY * point.y };
-      if (mouseJoint) {
-        mouseJoint.setTarget(point);
-      }
-
-      mouseMove.x = point.x;
-      mouseMove.y = point.y;
-    }).on(Stage.Mouse.END, function(point) {
-      point = { x: point.x, y: testbed.scaleY * point.y };
-      if (mouseJoint) {
-        world.destroyJoint(mouseJoint);
-        mouseJoint = null;
-      }
-      if (targetBody) {
-        const force = Vec2.sub(point, targetBody.getPosition());
-        targetBody.applyForceToCenter(force.mul(testbed.mouseForce), true);
-        targetBody = null;
-      }
-
-    }).on(Stage.Mouse.CANCEL, function(point) {
-      point = { x: point.x, y: testbed.scaleY * point.y };
-      if (mouseJoint) {
-        world.destroyJoint(mouseJoint);
-        mouseJoint = null;
-      }
-      if (targetBody) {
-        targetBody = null;
-      }
-    });
-
-    window.addEventListener("keydown", function(e) {
-      switch (e.keyCode) {
-        case 'P'.charCodeAt(0):
-          testbed.togglePause();
-          break;
-      }
-    }, false);
+    window.addEventListener(
+      "keydown",
+      function (e) {
+        switch (e.keyCode) {
+          case "P".charCodeAt(0):
+            testbed.togglePause();
+            break;
+        }
+      },
+      false
+    );
 
     const downKeys = {};
-    window.addEventListener("keydown", function(e) {
+    window.addEventListener("keydown", function (e) {
       const keyCode = e.keyCode;
       downKeys[keyCode] = true;
       updateActiveKeys(keyCode, true);
       testbed.keydown && testbed.keydown(keyCode, String.fromCharCode(keyCode));
     });
-    window.addEventListener("keyup", function(e) {
+    window.addEventListener("keyup", function (e) {
       const keyCode = e.keyCode;
       downKeys[keyCode] = false;
       updateActiveKeys(keyCode, false);
@@ -455,13 +473,12 @@ export function testbed(opts, callback?) {
       if (/\w/.test(char)) {
         activeKeys[char] = down;
       }
-      activeKeys.right = downKeys[39] || activeKeys['D'];
-      activeKeys.left = downKeys[37] || activeKeys['A'];
-      activeKeys.up = downKeys[38] || activeKeys['W'];
-      activeKeys.down = downKeys[40] || activeKeys['S'];
-      activeKeys.fire = downKeys[32] || downKeys[13] ;
+      activeKeys.right = downKeys[39] || activeKeys["D"];
+      activeKeys.left = downKeys[37] || activeKeys["A"];
+      activeKeys.up = downKeys[38] || activeKeys["W"];
+      activeKeys.down = downKeys[40] || activeKeys["S"];
+      activeKeys.fire = downKeys[32] || downKeys[13];
     }
-
   });
 }
 
@@ -470,7 +487,7 @@ Viewer.prototype = Stage._create(Viewer._super.prototype);
 
 function Viewer(world, opts) {
   Viewer._super.call(this);
-  this.label('Planck');
+  this.label("Planck");
 
   opts = opts || {};
 
@@ -499,34 +516,33 @@ function Viewer(world, opts) {
     return true;
   }, true);
 
-  world.on('remove-fixture', function(obj) {
+  world.on("remove-fixture", function (obj) {
     obj.ui && obj.ui.remove();
   });
 
-  world.on('remove-joint', function(obj) {
+  world.on("remove-joint", function (obj) {
     obj.ui && obj.ui.remove();
   });
 }
 
-Viewer.prototype.renderWorld = function() {
+Viewer.prototype.renderWorld = function () {
   const world = this._world;
   const options = this._options;
   const viewer = this;
 
   for (let b = world.getBodyList(); b; b = b.getNext()) {
     for (let f = b.getFixtureList(); f; f = f.getNext()) {
-
       if (!f.ui) {
         if (f.render && f.render.stroke) {
           options.strokeStyle = f.render.stroke;
         } else if (b.render && b.render.stroke) {
           options.strokeStyle = b.render.stroke;
         } else if (b.isDynamic()) {
-          options.strokeStyle = 'rgba(255,255,255,0.9)';
+          options.strokeStyle = "rgba(255,255,255,0.9)";
         } else if (b.isKinematic()) {
-          options.strokeStyle = 'rgba(255,255,255,0.7)';
+          options.strokeStyle = "rgba(255,255,255,0.7)";
         } else if (b.isStatic()) {
-          options.strokeStyle = 'rgba(255,255,255,0.5)';
+          options.strokeStyle = "rgba(255,255,255,0.5)";
         }
 
         if (f.render && f.render.fill) {
@@ -534,21 +550,21 @@ Viewer.prototype.renderWorld = function() {
         } else if (b.render && b.render.fill) {
           options.fillStyle = b.render.fill;
         } else {
-          options.fillStyle = '';
+          options.fillStyle = "";
         }
 
         const type = f.getType();
         const shape = f.getShape();
-        if (type == 'circle') {
+        if (type == "circle") {
           f.ui = viewer.drawCircle(shape, options);
         }
-        if (type == 'edge') {
+        if (type == "edge") {
           f.ui = viewer.drawEdge(shape, options);
         }
-        if (type == 'polygon') {
+        if (type == "polygon") {
           f.ui = viewer.drawPolygon(shape, options);
         }
-        if (type == 'chain') {
+        if (type == "chain") {
           f.ui = viewer.drawChain(shape, options);
         }
 
@@ -560,7 +576,11 @@ Viewer.prototype.renderWorld = function() {
       if (f.ui) {
         const p = b.getPosition();
         const r = b.getAngle();
-        if (f.ui.__lastX !== p.x || f.ui.__lastY !== p.y || f.ui.__lastR !== r) {
+        if (
+          f.ui.__lastX !== p.x ||
+          f.ui.__lastY !== p.y ||
+          f.ui.__lastR !== r
+        ) {
           f.ui.__lastX = p.x;
           f.ui.__lastY = p.y;
           f.ui.__lastR = r;
@@ -568,7 +588,6 @@ Viewer.prototype.renderWorld = function() {
           f.ui.rotate(options.scaleY * r);
         }
       }
-
     }
   }
 
@@ -578,10 +597,10 @@ Viewer.prototype.renderWorld = function() {
     const b = j.getAnchorB();
 
     if (!j.ui) {
-      options.strokeStyle = 'rgba(255,255,255,0.2)';
+      options.strokeStyle = "rgba(255,255,255,0.2)";
 
       j.ui = viewer.drawJoint(j, options);
-      j.ui.pin('handle', 0.5);
+      j.ui.pin("handle", 0.5);
       if (j.ui) {
         j.ui.appendTo(viewer);
       }
@@ -598,17 +617,15 @@ Viewer.prototype.renderWorld = function() {
       j.ui.offset(cx, cy);
     }
   }
-
 };
 
-Viewer.prototype.drawJoint = function(joint, options) {
+Viewer.prototype.drawJoint = function (joint, options) {
   const lw = options.lineWidth;
   const ratio = options.ratio;
 
   const length = 10;
 
-  const texture = Stage.canvas(function(ctx) {
-
+  const texture = Stage.canvas(function (ctx) {
     this.size(length + 2 * lw, 2 * lw, ratio);
 
     ctx.scale(ratio, ratio);
@@ -616,7 +633,7 @@ Viewer.prototype.drawJoint = function(joint, options) {
     ctx.moveTo(lw, lw);
     ctx.lineTo(lw + length, lw);
 
-    ctx.lineCap = 'round';
+    ctx.lineCap = "round";
     ctx.lineWidth = options.lineWidth;
     ctx.strokeStyle = options.strokeStyle;
     ctx.stroke();
@@ -626,7 +643,7 @@ Viewer.prototype.drawJoint = function(joint, options) {
   return image;
 };
 
-Viewer.prototype.drawCircle = function(shape, options) {
+Viewer.prototype.drawCircle = function (shape, options) {
   const lw = options.lineWidth;
   const ratio = options.ratio;
 
@@ -636,8 +653,7 @@ Viewer.prototype.drawCircle = function(shape, options) {
   const w = r * 2 + lw * 2;
   const h = r * 2 + lw * 2;
 
-  const texture = Stage.canvas(function(ctx) {
-
+  const texture = Stage.canvas(function (ctx) {
     this.size(w, h, ratio);
 
     ctx.scale(ratio, ratio);
@@ -651,13 +667,15 @@ Viewer.prototype.drawCircle = function(shape, options) {
     ctx.strokeStyle = options.strokeStyle;
     ctx.stroke();
   });
-  const image = Stage.image(texture)
-    .offset(shape.m_p.x - cx, options.scaleY * shape.m_p.y - cy);
+  const image = Stage.image(texture).offset(
+    shape.m_p.x - cx,
+    options.scaleY * shape.m_p.y - cy
+  );
   const node = Stage.create().append(image);
   return node;
 };
 
-Viewer.prototype.drawEdge = function(edge, options) {
+Viewer.prototype.drawEdge = function (edge, options) {
   const lw = options.lineWidth;
   const ratio = options.ratio;
 
@@ -669,8 +687,7 @@ Viewer.prototype.drawEdge = function(edge, options) {
 
   const length = Math.sqrt(dx * dx + dy * dy);
 
-  const texture = Stage.canvas(function(ctx) {
-
+  const texture = Stage.canvas(function (ctx) {
     this.size(length + 2 * lw, 2 * lw, ratio);
 
     ctx.scale(ratio, ratio);
@@ -678,7 +695,7 @@ Viewer.prototype.drawEdge = function(edge, options) {
     ctx.moveTo(lw, lw);
     ctx.lineTo(lw + length, lw);
 
-    ctx.lineCap = 'round';
+    ctx.lineCap = "round";
     ctx.lineWidth = options.lineWidth;
     ctx.strokeStyle = options.strokeStyle;
     ctx.stroke();
@@ -694,7 +711,7 @@ Viewer.prototype.drawEdge = function(edge, options) {
   return node;
 };
 
-Viewer.prototype.drawPolygon = function(shape, options) {
+Viewer.prototype.drawPolygon = function (shape, options) {
   const lw = options.lineWidth;
   const ratio = options.ratio;
 
@@ -719,8 +736,7 @@ Viewer.prototype.drawPolygon = function(shape, options) {
   const width = maxX - minX;
   const height = maxY - minY;
 
-  const texture = Stage.canvas(function(ctx) {
-
+  const texture = Stage.canvas(function (ctx) {
     this.size(width + 2 * lw, height + 2 * lw, ratio);
 
     ctx.scale(ratio, ratio);
@@ -729,10 +745,8 @@ Viewer.prototype.drawPolygon = function(shape, options) {
       const v = vertices[i];
       const x = v.x - minX + lw;
       const y = options.scaleY * v.y - minY + lw;
-      if (i == 0)
-        ctx.moveTo(x, y);
-      else
-        ctx.lineTo(x, y);
+      if (i == 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
     }
 
     if (vertices.length > 2) {
@@ -745,7 +759,7 @@ Viewer.prototype.drawPolygon = function(shape, options) {
       ctx.closePath();
     }
 
-    ctx.lineCap = 'round';
+    ctx.lineCap = "round";
     ctx.lineWidth = options.lineWidth;
     ctx.strokeStyle = options.strokeStyle;
     ctx.stroke();
@@ -757,7 +771,7 @@ Viewer.prototype.drawPolygon = function(shape, options) {
   return node;
 };
 
-Viewer.prototype.drawChain = function(shape, options) {
+Viewer.prototype.drawChain = function (shape, options) {
   const lw = options.lineWidth;
   const ratio = options.ratio;
 
@@ -782,8 +796,7 @@ Viewer.prototype.drawChain = function(shape, options) {
   const width = maxX - minX;
   const height = maxY - minY;
 
-  const texture = Stage.canvas(function(ctx) {
-
+  const texture = Stage.canvas(function (ctx) {
     this.size(width + 2 * lw, height + 2 * lw, ratio);
 
     ctx.scale(ratio, ratio);
@@ -792,10 +805,8 @@ Viewer.prototype.drawChain = function(shape, options) {
       const v = vertices[i];
       const x = v.x - minX + lw;
       const y = options.scaleY * v.y - minY + lw;
-      if (i == 0)
-        ctx.moveTo(x, y);
-      else
-        ctx.lineTo(x, y);
+      if (i == 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
     }
 
     // TODO: if loop
@@ -809,7 +820,7 @@ Viewer.prototype.drawChain = function(shape, options) {
       ctx.closePath();
     }
 
-    ctx.lineCap = 'round';
+    ctx.lineCap = "round";
     ctx.lineWidth = options.lineWidth;
     ctx.strokeStyle = options.strokeStyle;
     ctx.stroke();
@@ -821,74 +832,155 @@ Viewer.prototype.drawChain = function(shape, options) {
   return node;
 };
 
-
 // Everything below this is copied from ../src/index.ts
 
-export { default as Serializer } from '../src/serializer/index';
+export { default as Settings } from "../src/Settings";
+export {
+  default as AABB,
+  RayCastCallback,
+  RayCastInput,
+  RayCastOutput,
+} from "../src/collision/AABB";
+export {
+  default as Distance,
+  DistanceInput,
+  DistanceOutput,
+} from "../src/collision/Distance";
+export {
+  default as DynamicTree,
+  DynamicTreeQueryCallback,
+} from "../src/collision/DynamicTree";
+export { default as Manifold } from "../src/collision/Manifold";
+export { default as Shape, ShapeType } from "../src/collision/Shape";
+export {
+  TOIInput,
+  TOIOutput,
+  default as TimeOfImpact,
+} from "../src/collision/TimeOfImpact";
+export { default as Box } from "../src/collision/shape/BoxShape";
+export { default as Chain } from "../src/collision/shape/ChainShape";
+export { default as Circle } from "../src/collision/shape/CircleShape";
+export { CollideCircles } from "../src/collision/shape/CollideCircle";
+export { CollidePolygonCircle } from "../src/collision/shape/CollideCirclePolygone";
+export { CollideEdgeCircle } from "../src/collision/shape/CollideEdgeCircle";
+export { CollideEdgePolygon } from "../src/collision/shape/CollideEdgePolygon";
+export { CollidePolygons } from "../src/collision/shape/CollidePolygon";
+export { default as Edge } from "../src/collision/shape/EdgeShape";
+export { default as Polygon } from "../src/collision/shape/PolygonShape";
+export { default as Mat22 } from "../src/common/Mat22";
+export { default as Mat33 } from "../src/common/Mat33";
+export { default as Math } from "../src/common/Math";
+export { default as Rot } from "../src/common/Rot";
+export { default as Sweep } from "../src/common/Sweep";
+export { default as Transform } from "../src/common/Transform";
+export { default as Vec2 } from "../src/common/Vec2";
+export { default as Vec3 } from "../src/common/Vec3";
+export {
+  default as Body,
+  BodyDef,
+  BodyType,
+  MassData,
+} from "../src/dynamics/Body";
+export {
+  default as Contact,
+  ContactCallback,
+  ContactEdge,
+} from "../src/dynamics/Contact";
+export {
+  default as Fixture,
+  FixtureDef,
+  FixtureOpt,
+  FixtureProxy,
+} from "../src/dynamics/Fixture";
+export {
+  default as Joint,
+  JointDef,
+  JointEdge,
+  JointOpt,
+} from "../src/dynamics/Joint";
+export { default as World } from "../src/dynamics/World";
+export {
+  default as DistanceJoint,
+  DistanceJointDef,
+  DistanceJointOpt,
+} from "../src/dynamics/joint/DistanceJoint";
+export {
+  default as FrictionJoint,
+  FrictionJointDef,
+  FrictionJointOpt,
+} from "../src/dynamics/joint/FrictionJoint";
+export {
+  default as GearJoint,
+  GearJointDef,
+  GearJointOpt,
+} from "../src/dynamics/joint/GearJoint";
+export {
+  default as MotorJoint,
+  MotorJointDef,
+  MotorJointOpt,
+} from "../src/dynamics/joint/MotorJoint";
+export {
+  default as MouseJoint,
+  MouseJointDef,
+  MouseJointOpt,
+} from "../src/dynamics/joint/MouseJoint";
+export {
+  default as PrismaticJoint,
+  PrismaticJointDef,
+  PrismaticJointOpt,
+} from "../src/dynamics/joint/PrismaticJoint";
+export {
+  default as PulleyJoint,
+  PulleyJointDef,
+  PulleyJointOpt,
+} from "../src/dynamics/joint/PulleyJoint";
+export {
+  default as RevoluteJoint,
+  RevoluteJointDef,
+  RevoluteJointOpt,
+} from "../src/dynamics/joint/RevoluteJoint";
+export {
+  default as RopeJoint,
+  RopeJointDef,
+  RopeJointOpt,
+} from "../src/dynamics/joint/RopeJoint";
+export {
+  default as WeldJoint,
+  WeldJointDef,
+  WeldJointOpt,
+} from "../src/dynamics/joint/WeldJoint";
+export {
+  default as WheelJoint,
+  WheelJointDef,
+  WheelJointOpt,
+} from "../src/dynamics/joint/WheelJoint";
+export { default as Serializer } from "../src/serializer/index";
+export type { _ContactImpulse as ContactImpulse };
 
-export { default as Math } from '../src/common/Math';
-export { default as Vec2 } from '../src/common/Vec2';
-export { default as Vec3 } from '../src/common/Vec3';
-export { default as Mat22 } from '../src/common/Mat22';
-export { default as Mat33 } from '../src/common/Mat33';
-export { default as Transform } from '../src/common/Transform';
-export { default as Rot } from '../src/common/Rot';
+import { default as Settings } from "../src/Settings";
+import {
+  default as Distance,
+  DistanceInput,
+  DistanceOutput,
+  DistanceProxy,
+  SimplexCache,
+  testOverlap,
+} from "../src/collision/Distance";
+import { default as DynamicTree } from "../src/collision/DynamicTree";
+import { default as Manifold } from "../src/collision/Manifold";
+import {
+  TOIInput,
+  TOIOutput,
+  default as TimeOfImpact,
+} from "../src/collision/TimeOfImpact";
+import { CollidePolygons } from "../src/collision/shape/CollidePolygon";
+import { default as Sweep } from "../src/common/Sweep";
+import Solver, { TimeStep } from "../src/dynamics/Solver";
 
-export { default as AABB } from '../src/collision/AABB';
+import { default as stats } from "../src/util/stats"; // todo: what to do with this?
 
-export { default as Shape } from '../src/collision/Shape';
-export { default as Fixture } from '../src/dynamics/Fixture';
-export { default as Body } from '../src/dynamics/Body';
-export { default as Contact } from '../src/dynamics/Contact';
-export { default as Joint } from '../src/dynamics/Joint';
-export { default as World } from '../src/dynamics/World';
-
-export { default as Circle } from '../src/collision/shape/CircleShape';
-export { default as Edge } from '../src/collision/shape/EdgeShape';
-export { default as Polygon } from '../src/collision/shape/PolygonShape';
-export { default as Chain } from '../src/collision/shape/ChainShape';
-export { default as Box } from '../src/collision/shape/BoxShape';
-
-export { CollideCircles } from '../src/collision/shape/CollideCircle';
-export { CollideEdgeCircle } from '../src/collision/shape/CollideEdgeCircle';
-export { CollidePolygons } from '../src/collision/shape/CollidePolygon';
-export { CollidePolygonCircle } from '../src/collision/shape/CollideCirclePolygone';
-export { CollideEdgePolygon } from '../src/collision/shape/CollideEdgePolygon';
-
-export { default as DistanceJoint } from '../src/dynamics/joint/DistanceJoint';
-export { default as FrictionJoint } from '../src/dynamics/joint/FrictionJoint';
-export { default as GearJoint } from '../src/dynamics/joint/GearJoint';
-export { default as MotorJoint } from '../src/dynamics/joint/MotorJoint';
-export { default as MouseJoint } from '../src/dynamics/joint/MouseJoint';
-export { default as PrismaticJoint } from '../src/dynamics/joint/PrismaticJoint';
-export { default as PulleyJoint } from '../src/dynamics/joint/PulleyJoint';
-export { default as RevoluteJoint } from '../src/dynamics/joint/RevoluteJoint';
-export { default as RopeJoint } from '../src/dynamics/joint/RopeJoint';
-export { default as WeldJoint } from '../src/dynamics/joint/WeldJoint';
-export { default as WheelJoint } from '../src/dynamics/joint/WheelJoint';
-
-export { default as Settings } from '../src/Settings';
-
-export { default as Sweep } from '../src/common/Sweep';
-export { default as Manifold } from '../src/collision/Manifold';
-export { default as Distance } from '../src/collision/Distance';
-export { default as TimeOfImpact } from '../src/collision/TimeOfImpact';
-export { default as DynamicTree } from '../src/collision/DynamicTree';
-
-import Solver, { TimeStep } from '../src/dynamics/Solver';
-import { CollidePolygons } from '../src/collision/shape/CollidePolygon';
-import { default as Settings } from '../src/Settings';
-import { default as Sweep } from '../src/common/Sweep';
-import { default as Manifold } from '../src/collision/Manifold';
-import { default as Distance, DistanceInput, DistanceOutput, DistanceProxy, SimplexCache, testOverlap } from '../src/collision/Distance';
-import { default as TimeOfImpact, TOIInput, TOIOutput } from '../src/collision/TimeOfImpact';
-import { default as DynamicTree } from '../src/collision/DynamicTree';
-
-import { default as stats } from '../src/util/stats'; // todo: what to do with this?
-
-import { ContactImpulse } from '../src/dynamics/Solver';
+import { ContactImpulse } from "../src/dynamics/Solver";
 type _ContactImpulse = InstanceType<typeof ContactImpulse>;
-export type { _ContactImpulse as ContactImpulse }
 
 /** @deprecated Merged with main namespace */
 export const internal = {};

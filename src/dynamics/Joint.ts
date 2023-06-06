@@ -93,21 +93,21 @@ const DEFAULTS = {
  */
 export default abstract class Joint {
 
-  /** @internal */ m_type: string = 'unknown-joint';
+  m_type: string = 'unknown-joint';
 
-  /** @internal */ m_bodyA: Body;
-  /** @internal */ m_bodyB: Body;
+  m_bodyA: Body;
+  m_bodyB: Body;
 
-  /** @internal */ m_collideConnected: boolean;
+  m_collideConnected: boolean;
 
-  /** @internal */ m_prev: Joint | null = null;
-  /** @internal */ m_next: Joint | null = null;
+  m_prev: Joint | null = null;
+  m_next: Joint | null = null;
 
-  /** @internal */ m_edgeA: JointEdge = new JointEdge();
-  /** @internal */ m_edgeB: JointEdge = new JointEdge();
+  m_edgeA: JointEdge = new JointEdge();
+  m_edgeB: JointEdge = new JointEdge();
 
   /** @internal */ m_islandFlag: boolean = false;
-  /** @internal */ m_userData: unknown;
+  m_userData: any;
 
   constructor(def: JointDef);
   constructor(def: JointOpt, bodyA: Body, bodyB: Body);

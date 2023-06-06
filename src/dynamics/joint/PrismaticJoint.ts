@@ -124,24 +124,25 @@ const DEFAULTS = {
 export default class PrismaticJoint extends Joint {
   static TYPE = 'prismatic-joint' as const;
 
-  /** @internal */ m_type: 'prismatic-joint';
-  /** @internal */ m_localAnchorA: Vec2;
-  /** @internal */ m_localAnchorB: Vec2;
-  /** @internal */ m_localXAxisA: Vec2;
-  /** @internal */ m_localYAxisA: Vec2;
-  /** @internal */ m_referenceAngle: number;
-  /** @internal */ m_impulse: Vec3;
-  /** @internal */ m_motorMass: number;
-  /** @internal */ m_motorImpulse: number;
-  /** @internal */ m_lowerTranslation: number;
-  /** @internal */ m_upperTranslation: number;
-  /** @internal */ m_maxMotorForce: number;
-  /** @internal */ m_motorSpeed: number;
-  /** @internal */ m_enableLimit: boolean;
-  /** @internal */ m_enableMotor: boolean;
-  /** @internal */ m_limitState: number; // TODO enum
-  /** @internal */ m_axis: Vec2;
-  /** @internal */ m_perp: Vec2;
+  m_type: 'prismatic-joint';
+  m_localAnchorA: Vec2;
+  m_localAnchorB: Vec2;
+  m_localXAxisA: Vec2;
+  m_localYAxisA: Vec2;
+  m_referenceAngle: number;
+  m_impulse: Vec3;
+  m_motorMass: number;
+  m_motorImpulse: number;
+  m_lowerTranslation: number;
+  m_upperTranslation: number;
+  m_maxMotorForce: number;
+  m_motorSpeed: number;
+  m_enableLimit: boolean;
+  m_enableMotor: boolean;
+  m_limitState: number; // TODO enum
+  m_axis: Vec2;
+  m_perp: Vec2;
+  
   // Solver temp
   /** @internal */ m_localCenterA: Vec2;
   /** @internal */ m_localCenterB: Vec2;

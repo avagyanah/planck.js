@@ -82,16 +82,16 @@ const DEFAULTS = {
 export default class RopeJoint extends Joint {
   static TYPE = 'rope-joint' as const;
 
-  /** @internal */ m_type: 'rope-joint';
-  /** @internal */ m_localAnchorA: Vec2;
-  /** @internal */ m_localAnchorB: Vec2;
+  m_type: 'rope-joint';
+  m_localAnchorA: Vec2;
+  m_localAnchorB: Vec2;
 
-  /** @internal */ m_maxLength: number;
+  m_maxLength: number;
 
-  /** @internal */ m_mass: number;
-  /** @internal */ m_impulse: number;
-  /** @internal */ m_length: number;
-  /** @internal */ m_state: number; // TODO enum
+  m_mass: number;
+  m_impulse: number;
+  m_length: number;
+  m_state: number; // TODO enum
 
   // Solver temp
   /** @internal */ m_u: Vec2;

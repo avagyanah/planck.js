@@ -5035,19 +5035,13 @@
      */
     var Contact = /** @class */ (function () {
         function Contact(fA, indexA, fB, indexB, evaluateFcn) {
-            /** @internal */
             this.m_manifold = new Manifold();
-            /** @internal */
             this.m_prev = null;
-            /** @internal */
             this.m_next = null;
-            /** @internal */
             this.m_toi = 1.0;
-            /** @internal */
             this.m_toiCount = 0;
             /** @internal This contact has a valid TOI in m_toi */
             this.m_toiFlag = false;
-            /** @internal */
             this.m_tangentSpeed = 0.0;
             /** @internal This contact can be disabled (by user) */
             this.m_enabledFlag = true;
@@ -5951,11 +5945,11 @@
      */
     var Joint = /** @class */ (function () {
         function Joint(def, bodyA, bodyB) {
-            /** @internal */ this.m_type = 'unknown-joint';
-            /** @internal */ this.m_prev = null;
-            /** @internal */ this.m_next = null;
-            /** @internal */ this.m_edgeA = new JointEdge();
-            /** @internal */ this.m_edgeB = new JointEdge();
+            this.m_type = 'unknown-joint';
+            this.m_prev = null;
+            this.m_next = null;
+            this.m_edgeA = new JointEdge();
+            this.m_edgeB = new JointEdge();
             /** @internal */ this.m_islandFlag = false;
             bodyA = 'bodyA' in def ? def.bodyA : bodyA;
             bodyB = 'bodyB' in def ? def.bodyB : bodyB;
@@ -19031,15 +19025,21 @@
     exports.CollidePolygonCircle = CollidePolygonCircle;
     exports.CollidePolygons = CollidePolygons;
     exports.Contact = Contact;
+    exports.ContactEdge = ContactEdge;
     exports.Distance = Distance;
+    exports.DistanceInput = DistanceInput;
     exports.DistanceJoint = DistanceJoint;
+    exports.DistanceOutput = DistanceOutput;
     exports.DynamicTree = DynamicTree;
     exports.Edge = EdgeShape;
     exports.Fixture = Fixture;
+    exports.FixtureProxy = FixtureProxy;
     exports.FrictionJoint = FrictionJoint;
     exports.GearJoint = GearJoint;
     exports.Joint = Joint;
+    exports.JointEdge = JointEdge;
     exports.Manifold = Manifold;
+    exports.MassData = MassData;
     exports.Mat22 = Mat22;
     exports.Mat33 = Mat33;
     exports.Math = math$1;
@@ -19055,6 +19055,8 @@
     exports.Settings = Settings;
     exports.Shape = Shape;
     exports.Sweep = Sweep;
+    exports.TOIInput = TOIInput;
+    exports.TOIOutput = TOIOutput;
     exports.TimeOfImpact = TimeOfImpact;
     exports.Transform = Transform;
     exports.Vec2 = Vec2;

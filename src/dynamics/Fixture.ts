@@ -114,19 +114,19 @@ export class FixtureProxy {
  * To create a new Fixture use {@link Body.createFixture}.
  */
 export default class Fixture {
-  /** @internal */ m_body: Body;
-  /** @internal */ m_friction: number;
-  /** @internal */ m_restitution: number;
-  /** @internal */ m_density: number;
-  /** @internal */ m_isSensor: boolean;
-  /** @internal */ m_filterGroupIndex: number;
-  /** @internal */ m_filterCategoryBits: number;
-  /** @internal */ m_filterMaskBits: number;
-  /** @internal */ m_shape: Shape;
-  /** @internal */ m_next: Fixture | null;
-  /** @internal */ m_proxies: FixtureProxy[];
-  /** @internal */ m_proxyCount: number;
-  /** @internal */ m_userData: unknown;
+  m_body: Body;
+  m_friction: number;
+  m_restitution: number;
+  m_density: number;
+  m_isSensor: boolean;
+  m_filterGroupIndex: number;
+  m_filterCategoryBits: number;
+  m_filterMaskBits: number;
+  m_shape: Shape;
+  m_next: Fixture | null;
+  m_proxies: FixtureProxy[];
+  m_proxyCount: number;
+  m_userData: any;
 
   constructor(body: Body, def: FixtureDef);
   constructor(body: Body, shape: Shape, def?: FixtureOpt);

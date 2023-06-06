@@ -102,28 +102,28 @@ const DEFAULTS = {
 export default class WheelJoint extends Joint {
   static TYPE = 'wheel-joint' as const;
 
-  /** @internal */ m_type: 'wheel-joint';
-  /** @internal */ m_localAnchorA: Vec2;
-  /** @internal */ m_localAnchorB: Vec2;
-  /** @internal */ m_localXAxisA: Vec2;
-  /** @internal */ m_localYAxisA: Vec2;
+  m_type: 'wheel-joint';
+  m_localAnchorA: Vec2;
+  m_localAnchorB: Vec2;
+  m_localXAxisA: Vec2;
+  m_localYAxisA: Vec2;
 
-  /** @internal */ m_mass: number;
-  /** @internal */ m_impulse: number;
-  /** @internal */ m_motorMass: number;
-  /** @internal */ m_motorImpulse: number;
-  /** @internal */ m_springMass: number;
-  /** @internal */ m_springImpulse: number;
+  m_mass: number;
+  m_impulse: number;
+  m_motorMass: number;
+  m_motorImpulse: number;
+  m_springMass: number;
+  m_springImpulse: number;
 
-  /** @internal */ m_maxMotorTorque: number;
-  /** @internal */ m_motorSpeed: number;
-  /** @internal */ m_enableMotor: boolean;
+  m_maxMotorTorque: number;
+  m_motorSpeed: number;
+  m_enableMotor: boolean;
 
-  /** @internal */ m_frequencyHz: number;
-  /** @internal */ m_dampingRatio: number;
+  m_frequencyHz: number;
+  m_dampingRatio: number;
 
-  /** @internal */ m_bias: number;
-  /** @internal */ m_gamma: number;
+  m_bias: number;
+  m_gamma: number;
 
   // Solver temp
   /** @internal */ m_localCenterA: Vec2;

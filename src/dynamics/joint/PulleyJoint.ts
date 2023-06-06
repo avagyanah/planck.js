@@ -97,16 +97,16 @@ export default class PulleyJoint extends Joint {
   static TYPE = 'pulley-joint' as const;
   // static MIN_PULLEY_LENGTH: number = 2.0; // TODO where this is used?
 
-  /** @internal */ m_type: 'pulley-joint';
-  /** @internal */ m_groundAnchorA: Vec2;
-  /** @internal */ m_groundAnchorB: Vec2;
-  /** @internal */ m_localAnchorA: Vec2;
-  /** @internal */ m_localAnchorB: Vec2;
-  /** @internal */ m_lengthA: number;
-  /** @internal */ m_lengthB: number;
-  /** @internal */ m_ratio: number;
-  /** @internal */ m_constant: number;
-  /** @internal */ m_impulse: number;
+  m_type: 'pulley-joint';
+  m_groundAnchorA: Vec2;
+  m_groundAnchorB: Vec2;
+  m_localAnchorA: Vec2;
+  m_localAnchorB: Vec2;
+  m_lengthA: number;
+  m_lengthB: number;
+  m_ratio: number;
+  m_constant: number;
+  m_impulse: number;
 
   // Solver temp
   /** @internal */ m_uA: Vec2;

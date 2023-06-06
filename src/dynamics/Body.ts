@@ -172,7 +172,7 @@ export default class Body {
    */
   static readonly DYNAMIC: BodyType = 'dynamic';
 
-  /** @internal */ m_world: World;
+  m_world: World;
   /** @internal */ m_awakeFlag: boolean;
   /** @internal */ m_autoSleepFlag: boolean;
   /** @internal */ m_bulletFlag: boolean;
@@ -180,11 +180,11 @@ export default class Body {
   /** @internal */ m_activeFlag: boolean;
   /** @internal */ m_islandFlag: boolean;
   /** @internal */ m_toiFlag: boolean;
-  /** @internal */ m_userData: unknown;
-  /** @internal */ m_type: BodyType;
-  /** @internal */ m_mass: number;
-  /** @internal */ m_invMass: number;
-  /** @internal Rotational inertia about the center of mass. */
+  m_userData: any;
+  m_type: BodyType;
+  m_mass: number;
+  m_invMass: number;
+  /** Rotational inertia about the center of mass. */
   m_I: number;
   /** @internal */ m_invI: number;
   /** @internal the body origin transform */
@@ -192,24 +192,24 @@ export default class Body {
   /** @internal the swept motion for CCD */
   m_sweep: Sweep;
   // position and velocity correction
-  /** @internal */ c_velocity: Velocity;
-  /** @internal */ c_position: Position;
-  /** @internal */ m_force: Vec2;
-  /** @internal */ m_torque: number;
-  /** @internal */ m_linearVelocity: Vec2;
-  /** @internal */ m_angularVelocity: number;
-  /** @internal */ m_linearDamping: number;
-  /** @internal */ m_angularDamping: number;
-  /** @internal */ m_gravityScale: number;
-  /** @internal */ m_sleepTime: number;
-  /** @internal */ m_jointList: JointEdge | null;
-  /** @internal */ m_contactList: ContactEdge | null;
-  /** @internal */ m_fixtureList: Fixture | null;
-  /** @internal */ m_prev: Body | null;
-  /** @internal */ m_next: Body | null;
-  /** @internal */ m_destroyed: boolean;
+  c_velocity: Velocity;
+  c_position: Position;
+  m_force: Vec2;
+  m_torque: number;
+  m_linearVelocity: Vec2;
+  m_angularVelocity: number;
+  m_linearDamping: number;
+  m_angularDamping: number;
+  m_gravityScale: number;
+  m_sleepTime: number;
+  m_jointList: JointEdge | null;
+  m_contactList: ContactEdge | null;
+  m_fixtureList: Fixture | null;
+  m_prev: Body | null;
+  m_next: Body | null;
+  m_destroyed: boolean;
 
-  /** @internal */
+   /** @internal */
   constructor(world: World, def: BodyDef) {
     def = options(def, BodyDefDefault);
 

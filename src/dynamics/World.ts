@@ -93,27 +93,27 @@ export type WorldRayCastCallback = (fixture: Fixture, point: Vec2, normal: Vec2,
 export type WorldAABBQueryCallback = (fixture: Fixture) => boolean;
 
 export default class World {
-  /** @internal */ m_solver: Solver;
-  /** @internal */ m_broadPhase: BroadPhase;
-  /** @internal */ m_contactList: Contact | null;
-  /** @internal */ m_contactCount: number;
-  /** @internal */ m_bodyList: Body | null;
-  /** @internal */ m_bodyCount: number;
-  /** @internal */ m_jointList: Joint | null;
-  /** @internal */ m_jointCount: number;
-  /** @internal */ m_stepComplete: boolean;
-  /** @internal */ m_allowSleep: boolean;
-  /** @internal */ m_gravity: Vec2;
-  /** @internal */ m_clearForces: boolean;
-  /** @internal */ m_newFixture: boolean;
-  /** @internal */ m_locked: boolean;
-  /** @internal */ m_warmStarting: boolean;
-  /** @internal */ m_continuousPhysics: boolean;
-  /** @internal */ m_subStepping: boolean;
-  /** @internal */ m_blockSolve: boolean;
-  /** @internal */ m_velocityIterations: number;
-  /** @internal */ m_positionIterations: number;
-  /** @internal */ m_t: number;
+  m_solver: Solver;
+  m_broadPhase: BroadPhase;
+  m_contactList: Contact | null;
+  m_contactCount: number;
+  m_bodyList: Body | null;
+  m_bodyCount: number;
+  m_jointList: Joint | null;
+  m_jointCount: number;
+  m_stepComplete: boolean;
+  m_allowSleep: boolean;
+  m_gravity: Vec2;
+  m_clearForces: boolean;
+  m_newFixture: boolean;
+  m_locked: boolean;
+  m_warmStarting: boolean;
+  m_continuousPhysics: boolean;
+  m_subStepping: boolean;
+  m_blockSolve: boolean;
+  m_velocityIterations: number;
+  m_positionIterations: number;
+  m_t: number;
 
   // TODO
   /** @internal */ _listeners: {

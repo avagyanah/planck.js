@@ -81,24 +81,24 @@ const DEFAULTS = {
 export default class GearJoint extends Joint {
   static TYPE = 'gear-joint' as const;
 
-  /** @internal */ m_type: 'gear-joint';
-  /** @internal */ m_joint1: RevoluteJoint | PrismaticJoint;
-  /** @internal */ m_joint2: RevoluteJoint | PrismaticJoint;
-  /** @internal */ m_type1: 'revolute-joint' | 'prismatic-joint';
-  /** @internal */ m_type2: 'revolute-joint' | 'prismatic-joint';
-  /** @internal */ m_bodyC: Body;
-  /** @internal */ m_localAnchorC: Vec2;
-  /** @internal */ m_localAnchorA: Vec2;
-  /** @internal */ m_referenceAngleA: number;
-  /** @internal */ m_localAxisC: Vec2;
-  /** @internal */ m_bodyD: Body;
-  /** @internal */ m_localAnchorD: Vec2;
-  /** @internal */ m_localAnchorB: Vec2;
-  /** @internal */ m_referenceAngleB: number;
-  /** @internal */ m_localAxisD: Vec2;
-  /** @internal */ m_ratio: number;
-  /** @internal */ m_constant: number;
-  /** @internal */ m_impulse: number;
+  m_type: 'gear-joint';
+  m_joint1: RevoluteJoint | PrismaticJoint;
+  m_joint2: RevoluteJoint | PrismaticJoint;
+  m_type1: 'revolute-joint' | 'prismatic-joint';
+  m_type2: 'revolute-joint' | 'prismatic-joint';
+  m_bodyC: Body;
+  m_localAnchorC: Vec2;
+  m_localAnchorA: Vec2;
+  m_referenceAngleA: number;
+  m_localAxisC: Vec2;
+  m_bodyD: Body;
+  m_localAnchorD: Vec2;
+  m_localAnchorB: Vec2;
+  m_referenceAngleB: number;
+  m_localAxisD: Vec2;
+  m_ratio: number;
+  m_constant: number;
+  m_impulse: number;
 
   // Solver temp
   /** @internal */ m_lcA: Vec2;

@@ -86,14 +86,14 @@ export default class DistanceJoint extends Joint {
   static TYPE = 'distance-joint' as const;
 
   // Solver shared
-  /** @internal */ m_localAnchorA: Vec2;
-  /** @internal */ m_localAnchorB: Vec2;
-  /** @internal */ m_length: number;
-  /** @internal */ m_frequencyHz: number;
-  /** @internal */ m_dampingRatio: number;
-  /** @internal */ m_impulse: number;
-  /** @internal */ m_gamma: number;
-  /** @internal */ m_bias: number;
+  m_localAnchorA: Vec2;
+  m_localAnchorB: Vec2;
+  m_length: number;
+  m_frequencyHz: number;
+  m_dampingRatio: number;
+  m_impulse: number;
+  m_gamma: number;
+  m_bias: number;
 
   // Solver temp
   /** @internal */ m_u: Vec2;

@@ -88,15 +88,16 @@ const DEFAULTS = {
 export default class MouseJoint extends Joint {
   static TYPE = 'mouse-joint' as const;
 
-  /** @internal */ m_type: 'mouse-joint';
-  /** @internal */ m_targetA: Vec2;
-  /** @internal */ m_localAnchorB: Vec2;
-  /** @internal */ m_maxForce: number;
-  /** @internal */ m_impulse: Vec2;
-  /** @internal */ m_frequencyHz: number;
-  /** @internal */ m_dampingRatio: number;
-  /** @internal */ m_beta: number;
-  /** @internal */ m_gamma: number;
+  m_type: 'mouse-joint';
+  m_targetA: Vec2;
+  m_localAnchorB: Vec2;
+  m_maxForce: number;
+  m_impulse: Vec2;
+  m_frequencyHz: number;
+  m_dampingRatio: number;
+  m_beta: number;
+  m_gamma: number;
+  
   // Solver temp
   /** @internal */ m_rB: Vec2;
   /** @internal */ m_localCenterB: Vec2;
